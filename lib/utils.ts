@@ -12,7 +12,9 @@ export function formatPrice(cents: number): string {
 export function formatDateRange(checkIn: string, checkOut: string): string {
   const start = new Date(checkIn);
   const end = new Date(checkOut);
-  return \`\${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - \${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}\`;
+  const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return `${startStr} - ${endStr}`;
 }
 
 export function calculateNights(checkIn: string, checkOut: string): number {

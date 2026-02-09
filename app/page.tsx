@@ -18,7 +18,7 @@ export default function Home() {
     const checkInFormatted = checkIn.replace(/-/g, '');
     const checkOutFormatted = checkOut.replace(/-/g, '');
     
-    router.push(\`/rooms?checkIn=\${checkInFormatted}&checkOut=\${checkOutFormatted}&guests=\${guests}\`);
+    router.push(`/rooms?checkIn=${checkInFormatted}&checkOut=${checkOutFormatted}&guests=${guests}`);
   };
 
   const tomorrow = new Date();
@@ -37,7 +37,7 @@ export default function Home() {
             Stay Anchorage
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 mb-8 font-light">
-            Your Home Away From Home in Alaska's Largest City
+            Your Home Away From Home in Alaska&apos;s Largest City
           </p>
           
           {/* Quick Search */}
@@ -98,7 +98,7 @@ export default function Home() {
             </form>
             
             <p className="text-sm text-slate-500 mt-4">
-              4 unique properties • Weekly rates available • Book direct & save
+              4 unique properties • Weekly rates available • Book direct &amp; save
             </p>
           </div>
         </div>
@@ -114,34 +114,10 @@ export default function Home() {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { 
-                name: 'Unit 1', 
-                type: '1 Bedroom',
-                guests: '2 guests',
-                price: 'From $125/night',
-                image: '/images/unit1.jpg'
-              },
-              { 
-                name: 'Unit 2', 
-                type: '1 Bedroom',
-                guests: '2 guests',
-                price: 'From $125/night',
-                image: '/images/unit2.jpg'
-              },
-              { 
-                name: 'Unit 3', 
-                type: '2 Bedroom',
-                guests: '4 guests',
-                price: 'From $165/night',
-                image: '/images/unit3.jpg'
-              },
-              { 
-                name: 'Unit 4', 
-                type: '2 Bedroom',
-                guests: '4 guests',
-                price: 'From $165/night',
-                image: '/images/unit4.jpg'
-              },
+              { name: 'Unit 1', type: '1 Bedroom', guests: '2 guests', price: 'From $125/night' },
+              { name: 'Unit 2', type: '1 Bedroom', guests: '2 guests', price: 'From $125/night' },
+              { name: 'Unit 3', type: '2 Bedroom', guests: '4 guests', price: 'From $165/night' },
+              { name: 'Unit 4', type: '2 Bedroom', guests: '4 guests', price: 'From $165/night' },
             ].map((unit) => (
               <div key={unit.name} className="group cursor-pointer">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 mb-4 relative">
@@ -150,7 +126,6 @@ export default function Home() {
                     <p className="text-sm opacity-90">{unit.type}</p>
                     <p className="font-semibold">{unit.name}</p>
                   </div>
-                  {/* Placeholder - replace with actual images */}
                   <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="flex justify-between items-center">
@@ -204,7 +179,7 @@ export default function Home() {
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Explore Anchorage</h2>
               <p className="text-slate-600 mb-6">
-                Alaska's largest city offers incredible outdoor adventures, vibrant culture, 
+                Alaska&apos;s largest city offers incredible outdoor adventures, vibrant culture, 
                 and stunning mountain views. Our properties put you in the heart of it all.
               </p>
               
@@ -224,15 +199,10 @@ export default function Home() {
               </ul>
             </div>
             
-            <div className="aspect-video rounded-2xl overflow-hidden shadow-lg">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2261.5!2d-149.88!3d61.21!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z!5e0!3m2!1sen!2sus!4v1234567890"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-              />
+            <div className="aspect-video rounded-2xl overflow-hidden shadow-lg bg-slate-200">
+              <div className="w-full h-full flex items-center justify-center text-slate-400">
+                Map placeholder
+              </div>
             </div>
           </div>
         </div>
@@ -243,7 +213,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Book Your Stay?</h2>
           <p className="text-blue-100 mb-8 text-lg">
-            Whether you're visiting for business, relocation, or adventure, 
+            Whether you&apos;re visiting for business, relocation, or adventure, 
             we have the perfect place for you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-// Property data - will be replaced with Beds24 API data
 const properties = [
   {
     id: 'unit-1',
@@ -15,10 +14,9 @@ const properties = [
     guests: 2,
     bathrooms: 1,
     sqft: 400,
-    price: 12500, // cents
+    price: 12500,
     description: 'Perfect studio for solo travelers or couples. Walking distance to downtown Anchorage.',
     amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV'],
-    images: ['/images/unit1-1.jpg', '/images/unit1-2.jpg'],
   },
   {
     id: 'unit-2',
@@ -32,7 +30,6 @@ const properties = [
     price: 14500,
     description: 'Spacious one-bedroom with separate living area. Great for extended stays.',
     amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV', 'Workspace'],
-    images: ['/images/unit2-1.jpg', '/images/unit2-2.jpg'],
   },
   {
     id: 'unit-3',
@@ -46,7 +43,6 @@ const properties = [
     price: 16500,
     description: 'Ideal for families or groups. Two bedrooms with plenty of space to spread out.',
     amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV', 'Dining Area'],
-    images: ['/images/unit3-1.jpg', '/images/unit3-2.jpg'],
   },
   {
     id: 'unit-4',
@@ -60,7 +56,6 @@ const properties = [
     price: 18500,
     description: 'Our largest unit with stunning mountain views. Perfect for longer stays or groups.',
     amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV', 'Mountain View', 'Balcony'],
-    images: ['/images/unit4-1.jpg', '/images/unit4-2.jpg'],
   },
 ];
 
@@ -73,7 +68,6 @@ function RoomsContent() {
   const [filteredProperties, setFilteredProperties] = useState(properties);
   
   useEffect(() => {
-    // Filter by guest count
     const filtered = properties.filter(p => p.guests >= guests);
     setFilteredProperties(filtered);
   }, [guests]);
@@ -88,7 +82,6 @@ function RoomsContent() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-slate-900">
@@ -104,7 +97,6 @@ function RoomsContent() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Search Summary */}
         {checkIn && checkOut && (
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8">
             <p className="text-blue-800">
@@ -118,14 +110,12 @@ function RoomsContent() {
 
         <h1 className="text-3xl font-bold mb-8">Available Properties</h1>
 
-        {/* Property Grid */}
         <div className="grid md:grid-cols-2 gap-8">
           {filteredProperties.map((property) => (
             <div 
               key={property.id}
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
             >
-              {/* Image */}
               <div className="aspect-[16/10] bg-slate-200 relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-300 to-slate-400" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-medium">
@@ -133,7 +123,6 @@ function RoomsContent() {
                 </div>
               </div>
               
-              {/* Content */}
               <div className="p-6">
                 <h2 className="text-xl font-bold mb-2">{property.name}</h2>
                 <p className="text-slate-600 text-sm mb-4">{property.description}</p>
@@ -169,7 +158,7 @@ function RoomsContent() {
                     <span className="text-slate-500 text-sm"> / night</span>
                   </div>
                   <Link
-                    href={\`/book?property=\${property.id}&checkIn=\${checkIn}&checkOut=\${checkOut}&guests=\${guests}\`}
+                    href={`/book?property=${property.id}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                   >
                     Book Now
