@@ -4,58 +4,59 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
+// Stay Anchorage units from Beds24 (propId: 17757)
 const properties = [
   {
     id: 'unit-1',
-    name: 'Cozy Downtown Studio',
-    type: 'Studio',
-    bedrooms: 0,
+    roomId: '43512',
+    name: 'Unit 1',
+    type: '1 Bedroom',
     beds: '1 Queen Bed',
-    guests: 2,
+    guests: 5,
     bathrooms: 1,
-    sqft: 400,
-    price: 12500,
-    description: 'Perfect studio for solo travelers or couples. Walking distance to downtown Anchorage.',
+    sqft: 550,
+    price: 6000, // $60 min from Beds24
+    description: 'Cozy downtown apartment perfect for couples or solo travelers. Walking distance to everything.',
     amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV'],
   },
   {
     id: 'unit-2',
-    name: 'Modern 1BR Retreat',
+    roomId: '43513',
+    name: 'Unit 2',
     type: '1 Bedroom',
-    bedrooms: 1,
     beds: '1 Queen Bed',
-    guests: 2,
+    guests: 5,
     bathrooms: 1,
     sqft: 550,
-    price: 14500,
-    description: 'Spacious one-bedroom with separate living area. Great for extended stays.',
+    price: 6000,
+    description: 'Bright and airy one-bedroom with modern finishes. Great for extended stays.',
     amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV', 'Workspace'],
   },
   {
     id: 'unit-3',
-    name: 'Family 2BR Suite',
+    roomId: '435186',
+    name: 'Unit 3',
     type: '2 Bedroom',
-    bedrooms: 2,
-    beds: '1 King, 2 Twins',
-    guests: 4,
+    beds: '1 King, 1 Queen',
+    guests: 5,
     bathrooms: 1,
-    sqft: 850,
-    price: 16500,
-    description: 'Ideal for families or groups. Two bedrooms with plenty of space to spread out.',
+    sqft: 750,
+    price: 6000,
+    description: 'Spacious two-bedroom ideal for families or groups. Plenty of room to spread out.',
     amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV', 'Dining Area'],
   },
   {
     id: 'unit-4',
-    name: 'Deluxe 2BR Mountain View',
+    roomId: '43514',
+    name: 'Unit 4',
     type: '2 Bedroom',
-    bedrooms: 2,
     beds: '1 King, 1 Queen',
     guests: 4,
-    bathrooms: 2,
-    sqft: 950,
-    price: 18500,
-    description: 'Our largest unit with stunning mountain views. Perfect for longer stays or groups.',
-    amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV', 'Mountain View', 'Balcony'],
+    bathrooms: 1,
+    sqft: 750,
+    price: 7000, // $70 min from Beds24
+    description: 'Corner unit with extra natural light. Perfect for longer stays or small groups.',
+    amenities: ['Full Kitchen', 'WiFi', 'Washer/Dryer', 'Free Parking', 'Smart TV', 'Corner Unit'],
   },
 ];
 
@@ -108,7 +109,8 @@ function RoomsContent() {
           </div>
         )}
 
-        <h1 className="text-3xl font-bold mb-8">Available Properties</h1>
+        <h1 className="text-3xl font-bold mb-2">Available Properties</h1>
+        <p className="text-slate-600 mb-8">222 W 13th Ave, Anchorage, AK 99501</p>
 
         <div className="grid md:grid-cols-2 gap-8">
           {filteredProperties.map((property) => (
@@ -117,7 +119,7 @@ function RoomsContent() {
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
             >
               <div className="aspect-[16/10] bg-slate-200 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-300 to-slate-400" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-slate-400/40" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-medium">
                   {property.type}
                 </div>
@@ -128,10 +130,9 @@ function RoomsContent() {
                 <p className="text-slate-600 text-sm mb-4">{property.description}</p>
                 
                 <div className="flex flex-wrap gap-4 text-sm text-slate-600 mb-4">
-                  <span>👥 {property.guests} guests</span>
+                  <span>👥 Up to {property.guests} guests</span>
                   <span>🛏️ {property.beds}</span>
                   <span>🚿 {property.bathrooms} bath</span>
-                  <span>📐 {property.sqft} sqft</span>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-6">
