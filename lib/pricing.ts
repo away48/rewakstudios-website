@@ -1,6 +1,7 @@
 // Stay Anchorage Pricing Logic
 // Tax rules: < 30 nights = taxed, >= 30 nights = tax exempt (Anchorage municipal rule)
-// Payment: Credit card (Stripe) adds 3% fee, ACH (Forte) no fee
+// Payment: Credit card (Stripe) adds 3% fee ONLY for 30+ night stays
+// Short-term stays: no CC fee (absorbed by property)
 
 export interface PricingBreakdown {
   nights: number;
@@ -14,7 +15,6 @@ export interface PricingBreakdown {
   totalWithCCFee: number;
   totalACH: number;
   isLongTerm: boolean;
-  // Long-term billing schedule
   billingSchedule?: BillingPeriod[];
 }
 
@@ -33,7 +33,7 @@ export interface BillingPeriod {
 
 const LONG_TERM_THRESHOLD = 30;
 const CC_FEE_PERCENT = 0.03;
-const STAY_ANCHORAGE_TAX_RATE = 0.12; // 12% bed tax - Anchorage Municipality
+const STAY_ANCHORAGE_TAX_RATE = 0.12; // 12% bed tax
 
 export function calculatePricing(
   nightlyRates: { date: string; rate: number }[],
@@ -46,7 +46,9 @@ export function calculatePricing(
   const subtotal = nightlyRates.reduce((sum, r) => sum + r.rate, 0);
   const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
   const totalBeforeFees = subtotal + taxAmount;
-  const ccFeeAmount = Math.round(totalBeforeFees * CC_FEE_PERCENT * 100) / 100;
+  
+  // CC fee only applies to long-term stays (30+ nights)
+  const ccFeeAmount = isLongTerm ? Math.round(totalBeforeFees * CC_FEE_PERCENT * 100) / 100 : 0;
   
   const breakdown: PricingBreakdown = {
     nights,
@@ -55,7 +57,7 @@ export function calculatePricing(
     taxRate,
     taxAmount,
     totalBeforeFees,
-    ccFeePercent: CC_FEE_PERCENT,
+    ccFeePercent: isLongTerm ? CC_FEE_PERCENT : 0,
     ccFeeAmount,
     totalWithCCFee: totalBeforeFees + ccFeeAmount,
     totalACH: totalBeforeFees,
@@ -83,8 +85,7 @@ function calculateBillingSchedule(
     const isProrated = periodNumber > 1 && periodNights < 30;
     
     const subtotal = periodRates.reduce((sum, r) => sum + r.rate, 0);
-    // Long-term stays in Anchorage are tax exempt
-    const taxAmount = 0;
+    const taxAmount = 0; // Long-term = tax exempt in Anchorage
     const total = subtotal + taxAmount;
     const ccFee = Math.round(total * CC_FEE_PERCENT * 100) / 100;
 

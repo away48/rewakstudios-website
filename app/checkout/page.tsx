@@ -110,7 +110,7 @@ function StripePaymentForm({
         )}`}
       </button>
       <p className="text-xs text-slate-500 mt-2 text-center">
-        Includes 3% credit card processing fee
+        {pricing.isLongTerm ? 'Includes 3% credit card processing fee' : 'No additional fees'}
       </p>
     </form>
   );
@@ -238,7 +238,7 @@ function ACHPaymentForm({
         {processing ? 'Processing...' : `Pay ${formatCurrency(chargeAmount)} via ACH`}
       </button>
       <p className="text-xs text-slate-500 text-center">
-        No processing fee — save 3% with bank transfer
+        {pricing.isLongTerm ? 'No processing fee — save 3% with bank transfer' : 'No additional fees'}
       </p>
     </form>
   );
@@ -487,7 +487,7 @@ function CheckoutContent() {
                       }`}
                     >
                       <div className="text-lg font-semibold mb-1">💳 Credit Card</div>
-                      <div className="text-sm text-slate-500">3% processing fee</div>
+                      <div className="text-sm text-slate-500">{pricing.isLongTerm ? '3% processing fee' : 'No additional fees'}</div>
                       <div className="text-lg font-bold mt-2 text-blue-600">
                         {formatCurrency(
                           pricing.isLongTerm && pricing.billingSchedule?.length
@@ -506,7 +506,7 @@ function CheckoutContent() {
                       }`}
                     >
                       <div className="text-lg font-semibold mb-1">🏦 Bank Transfer</div>
-                      <div className="text-sm text-green-600 font-medium">No processing fee!</div>
+                      <div className="text-sm text-green-600 font-medium">{pricing.isLongTerm ? 'No processing fee — save 3%!' : 'No additional fees'}</div>
                       <div className="text-lg font-bold mt-2 text-green-600">
                         {formatCurrency(
                           pricing.isLongTerm && pricing.billingSchedule?.length
@@ -611,13 +611,15 @@ function CheckoutContent() {
               )}
 
               {paymentMethod === 'card' && guestInfoConfirmed && (
+                {pricing.isLongTerm && (
                 <div className="border-t mt-4 pt-4 text-xs text-slate-500">
                   <p>💳 Credit card: +{formatCurrency(
-                    pricing.isLongTerm && pricing.billingSchedule?.length
+                    pricing.billingSchedule?.length
                       ? pricing.billingSchedule[0].totalWithCCFee - pricing.billingSchedule[0].total
                       : pricing.ccFeeAmount
                   )} processing fee (3%)</p>
                 </div>
+                )}
               )}
 
               {paymentMethod === 'ach' && guestInfoConfirmed && (
