@@ -219,7 +219,7 @@ function RoomsContent() {
                     <span className="text-slate-500 text-sm"> / night</span>
                   </div>
                   <Link
-                    href={`/book?property=${property.id}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
+                    href={`/checkout?property=${property.id}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                   >
                     Book Now
