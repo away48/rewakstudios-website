@@ -185,11 +185,11 @@ export default function Home() {
               
               <ul className="space-y-3">
                 {[
-                  '🚶 Downtown & 5th Ave Mall — 0.3 miles (5 min walk)',
-                  '🎓 UAA (University of Alaska) — 2.5 miles (7 min)',
-                  '🏥 Providence Hospital — 2.0 miles (6 min)',
+                  '🚶 Downtown & 5th Ave Mall — 0.6 miles (14 min walk)',
+                  '🎓 UAA (University of Alaska) — 3.3 miles (10 min)',
+                  '🏥 Providence Hospital — 3.8 miles (13 min)',
                   '✈️ Ted Stevens Airport — 5.5 miles (12 min)',
-                  '🏥 Alaska Regional Hospital — 1.8 miles (5 min)',
+                  '🏥 Alaska Regional Hospital — 2.4 miles (9 min)',
                   '🛤️ Tony Knowles Coastal Trail — 0.5 miles',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3">
