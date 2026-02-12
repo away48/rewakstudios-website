@@ -1,7 +1,7 @@
 /**
  * Beds24 API Client for Rewak Studios
- * Property ID: 5780
- * V2 API for rates/availability, V1 for booking creation
+ * Property ID: 5780 (Fairbanks, AK)
+ * 3 Room Types: Queen, 2 Doubles, 2BR Apartment
  */
 
 const BEDS24_V1_API = 'https://beds24.com/api/json';
@@ -9,9 +9,17 @@ const BEDS24_V2_API = 'https://beds24.com/api/v2';
 const PROP_ID = 5780;
 const MIN_NIGHTS = 2;
 
-// Rewak Studios has multiple room types - query dynamically
+// Room IDs for Rewak Studios
+export const ROOM_IDS: Record<string, number> = {
+  'queen': 13092,
+  'two-doubles': 56674,
+  'apartment-2br': 411888, // TODO: Verify this is "Unit 5"
+};
+
 export const ROOM_INFO: Record<number, { name: string; slug: string; maxGuests: number; minPrice: number }> = {
-  // Will be populated dynamically from API
+  13092: { name: 'Queen Room', slug: 'queen', maxGuests: 2, minPrice: 97 },
+  56674: { name: 'Two Doubles', slug: 'two-doubles', maxGuests: 4, minPrice: 120 },
+  411888: { name: '2BR Apartment', slug: 'apartment-2br', maxGuests: 6, minPrice: 165 },
 };
 
 function getV2Token(): string {
@@ -68,15 +76,22 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
       return { success: false, rooms: [], error: data.error || 'No rooms found' };
     }
 
-    const rooms: RoomOffer[] = data.data.map((offer: any) => ({
-      roomId: offer.roomId,
-      roomName: offer.roomName || `Room ${offer.roomId}`,
-      slug: `room-${offer.roomId}`,
-      available: offer.available === true,
-      price: offer.price || null,
-      nightlyRates: offer.nightlyRates || [],
-      maxGuests: offer.maxPeople || 4,
-    }));
+    // Map API response to our 3 room types
+    const roomIds = Object.values(ROOM_IDS);
+    const rooms: RoomOffer[] = data.data
+      .filter((offer: any) => roomIds.includes(offer.roomId))
+      .map((offer: any) => {
+        const roomInfo = ROOM_INFO[offer.roomId];
+        return {
+          roomId: offer.roomId,
+          roomName: roomInfo?.name || offer.roomName || 'Room',
+          slug: roomInfo?.slug || `room-${offer.roomId}`,
+          available: offer.available === true,
+          price: offer.price || null,
+          nightlyRates: offer.nightlyRates || [],
+          maxGuests: roomInfo?.maxGuests || 4,
+        };
+      });
 
     return { success: true, rooms };
   } catch (error) {
