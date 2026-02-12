@@ -1,5 +1,5 @@
-// Stay Anchorage Pricing Logic
-// Tax rules: < 30 nights = taxed, >= 30 nights = tax exempt (Anchorage municipal rule)
+// Rewak Studios (Fairbanks, AK) Pricing Logic
+// Tax rules: < 30 nights = taxed, >= 30 nights = tax exempt (Alaska extended stay rule)
 // Payment: Credit card (Stripe) adds 3% fee ONLY for 30+ night stays
 // Short-term stays: no CC fee (absorbed by property)
 
@@ -33,7 +33,7 @@ export interface BillingPeriod {
 
 const LONG_TERM_THRESHOLD = 30;
 const CC_FEE_PERCENT = 0.03;
-const STAY_ANCHORAGE_TAX_RATE = 0.12; // 12% bed tax
+const FAIRBANKS_TAX_RATE = 0.08; // 8% Fairbanks bed tax (verify with city)
 
 export function calculatePricing(
   nightlyRates: { date: string; rate: number }[],
@@ -41,53 +41,58 @@ export function calculatePricing(
 ): PricingBreakdown {
   const nights = nightlyRates.length;
   const isLongTerm = nights >= LONG_TERM_THRESHOLD;
-  const taxRate = isLongTerm ? 0 : (taxRateOverride ?? STAY_ANCHORAGE_TAX_RATE);
+  const taxRate = isLongTerm ? 0 : (taxRateOverride ?? FAIRBANKS_TAX_RATE);
   
   const subtotal = nightlyRates.reduce((sum, r) => sum + r.rate, 0);
   const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
   const totalBeforeFees = subtotal + taxAmount;
   
   // CC fee only applies to long-term stays (30+ nights)
+  const ccFeePercent = isLongTerm ? CC_FEE_PERCENT : 0;
   const ccFeeAmount = isLongTerm ? Math.round(totalBeforeFees * CC_FEE_PERCENT * 100) / 100 : 0;
-  
-  const breakdown: PricingBreakdown = {
+  const totalWithCCFee = totalBeforeFees + ccFeeAmount;
+  const totalACH = totalBeforeFees; // ACH never has fees
+
+  // For long-term stays, create monthly billing schedule
+  let billingSchedule: BillingPeriod[] | undefined;
+  if (isLongTerm) {
+    billingSchedule = createBillingSchedule(nightlyRates, taxRate);
+  }
+
+  return {
     nights,
     nightlyRates,
     subtotal,
     taxRate,
     taxAmount,
     totalBeforeFees,
-    ccFeePercent: isLongTerm ? CC_FEE_PERCENT : 0,
+    ccFeePercent,
     ccFeeAmount,
-    totalWithCCFee: totalBeforeFees + ccFeeAmount,
-    totalACH: totalBeforeFees,
+    totalWithCCFee,
+    totalACH,
     isLongTerm,
+    billingSchedule,
   };
-
-  if (isLongTerm) {
-    breakdown.billingSchedule = calculateBillingSchedule(nightlyRates);
-  }
-
-  return breakdown;
 }
 
-function calculateBillingSchedule(
-  nightlyRates: { date: string; rate: number }[]
+function createBillingSchedule(
+  nightlyRates: { date: string; rate: number }[],
+  taxRate: number
 ): BillingPeriod[] {
   const periods: BillingPeriod[] = [];
-  let periodStart = 0;
+  let currentPeriodStart = 0;
   let periodNumber = 1;
 
-  while (periodStart < nightlyRates.length) {
-    const periodEnd = Math.min(periodStart + 30, nightlyRates.length);
-    const periodRates = nightlyRates.slice(periodStart, periodEnd);
-    const periodNights = periodRates.length;
-    const isProrated = periodNumber > 1 && periodNights < 30;
-    
+  while (currentPeriodStart < nightlyRates.length) {
+    const remainingNights = nightlyRates.length - currentPeriodStart;
+    const periodNights = Math.min(30, remainingNights);
+    const periodEnd = currentPeriodStart + periodNights;
+
+    const periodRates = nightlyRates.slice(currentPeriodStart, periodEnd);
     const subtotal = periodRates.reduce((sum, r) => sum + r.rate, 0);
-    const taxAmount = 0; // Long-term = tax exempt in Anchorage
+    const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
     const total = subtotal + taxAmount;
-    const ccFee = Math.round(total * CC_FEE_PERCENT * 100) / 100;
+    const totalWithCCFee = total + Math.round(total * CC_FEE_PERCENT * 100) / 100;
 
     periods.push({
       periodNumber,
@@ -97,21 +102,14 @@ function calculateBillingSchedule(
       subtotal,
       taxAmount,
       total,
-      totalWithCCFee: total + ccFee,
+      totalWithCCFee,
       isFirstPayment: periodNumber === 1,
-      isProrated,
+      isProrated: periodNights < 30,
     });
 
-    periodStart = periodEnd;
+    currentPeriodStart = periodEnd;
     periodNumber++;
   }
 
   return periods;
-}
-
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount);
 }

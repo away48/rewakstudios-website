@@ -1,34 +1,49 @@
-# Stay Anchorage Website
+# Rewak Studios Website
 
-Direct booking website for Stay Anchorage short-term rentals in Anchorage, Alaska.
+Custom booking website for Rewak Studios in Fairbanks, Alaska.
 
-## Tech Stack
+## Property Details
+- **Location:** 3483 Rewak Dr, Fairbanks, AK 99709
+- **Beds24 Property ID:** 5780
+- **Tax Rate:** 8% (Fairbanks bed tax - verify with city)
+- **Payment:** Stripe (credit card) + Forte (ACH/bank transfer)
 
-- Next.js 14 (App Router)
-- Tailwind CSS
-- Beds24 API integration
-- Deployed on Vercel
+## Features
+- Real-time availability from Beds24
+- Integrated checkout with Stripe & Forte
+- Dynamic pricing with tax calculation
+- 30+ night extended stays: tax-exempt, 3% CC fee (no fee for ACH)
+- <30 nights: taxed, no CC fee
 
-## Getting Started
+## Environment Variables
+
+Create `.env.local`:
+
+```bash
+BEDS24_API_KEY=your_v1_api_key
+BEDS24_V2_TOKEN=your_v2_token
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+FORTE_ACCESS_ID=your_forte_access_id
+FORTE_SECURE_KEY=your_forte_secure_key
+FORTE_ORG_ID=399195
+FORTE_LOC_ID=264389
+```
+
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
-
-## Environment Variables
-
-Copy `.env.example` to `.env.local` and fill in your credentials:
-
-- `BEDS24_API_KEY` - Beds24 API key
-- `BEDS24_PROP_KEY` - Beds24 property key
-
 ## Deployment
 
-Deployed automatically via Vercel on push to main branch.
+Deployed on Vercel. Push to `main` to auto-deploy.
 
-## License
-
-Private - ATW Properties, LLC
+## TODO
+- Pull real photos from Beds24 property 5780
+- Verify Fairbanks tax rate (currently set to 8%)
+- Add room-specific content/descriptions
+- Test full checkout flow end-to-end
