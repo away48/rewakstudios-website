@@ -34,7 +34,7 @@ export default function Home() {
         
         <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
-            Stay Anchorage
+            Rewak Studios
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 mb-8 font-light">
             Your Home Away From Home in Alaska&apos;s Largest City
@@ -236,10 +236,10 @@ export default function Home() {
       <footer className="py-12 px-4 bg-slate-900 text-white">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-semibold text-lg mb-4">Stay Anchorage</h3>
+            <h3 className="font-semibold text-lg mb-4">Rewak Studios</h3>
             <p className="text-slate-400 text-sm">
-              Anchorage, AK 99501<br />
-              <a href="mailto:info@stayanchorage.com" className="hover:text-white transition-colors">info@stayanchorage.com</a>
+              Fairbanks, AK 99709<br />
+              <a href="mailto:info@rewakstudios.com" className="hover:text-white transition-colors">info@rewakstudios.com</a>
             </p>
           </div>
           <div>
