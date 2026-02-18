@@ -20,8 +20,8 @@ const properties = [
     description: 'Cozy studio with queen bed, perfect for solo travelers or couples. Shared kitchenette access.',
     amenities: ['Shared Kitchenette', 'WiFi', 'Free Parking', 'Smart TV'],
     images: [
-      '/images/room-17.jpg', // Queen room
-      '/images/rewak-exterior.jpg',
+      'https://media.xmlcal.com/pic/p0000/5780/17.png',
+      'https://media.xmlcal.com/pic/p0000/5780/01.png',
     ],
   },
   {
@@ -37,8 +37,8 @@ const properties = [
     description: 'Spacious studio with two double beds, ideal for small families or groups. Shared kitchenette access.',
     amenities: ['Shared Kitchenette', 'WiFi', 'Free Parking', 'Smart TV'],
     images: [
-      '/images/room-06.jpg', // Two doubles
-      '/images/rewak-exterior.jpg',
+      'https://media.xmlcal.com/pic/p0000/5780/06.png',
+      'https://media.xmlcal.com/pic/p0000/5780/01.png',
     ],
   },
   {
@@ -54,8 +54,8 @@ const properties = [
     description: 'Full 2-bedroom apartment with complete kitchen, living area, and private bath. Perfect for families or extended stays.',
     amenities: ['Full Kitchen', 'WiFi', 'Free Parking', 'Smart TV', 'Living Area'],
     images: [
-      '/images/room-15.jpg', // 2BR apartment
-      '/images/rewak-exterior.jpg',
+      'https://media.xmlcal.com/pic/p0000/5780/15.png',
+      'https://media.xmlcal.com/pic/p0000/5780/01.png',
     ],
   },
 ];

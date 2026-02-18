@@ -114,9 +114,9 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: 'Queen Room', type: 'Studio', guests: '2 guests', image: '/images/room-17.jpg' },
-              { name: 'Two Doubles', type: 'Studio', guests: '4 guests', image: '/images/room-06.jpg' },
-              { name: '2BR Apartment', type: '2 Bedroom', guests: '6 guests', image: '/images/room-15.jpg' },
+              { name: 'Queen Room', type: 'Studio', guests: '2 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/17.png' },
+              { name: 'Two Doubles', type: 'Studio', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/06.png' },
+              { name: '2BR Apartment', type: '2 Bedroom', guests: '6 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/15.png' },
             ].map((unit) => (
               <div key={unit.name} className="group cursor-pointer">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 mb-4 relative">
