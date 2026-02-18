@@ -114,9 +114,9 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: 'Queen Room', type: 'Studio', guests: '2 guests', price: 'From $89/night', image: '/images/room-17.jpg' },
-              { name: 'Two Doubles', type: 'Studio', guests: '4 guests', price: 'From $120/night', image: '/images/room-06.jpg' },
-              { name: '2BR Apartment', type: '2 Bedroom', guests: '6 guests', price: 'From $165/night', image: '/images/room-15.jpg' },
+              { name: 'Queen Room', type: 'Studio', guests: '2 guests', price: 'Select dates to see rates', image: '/images/room-17.jpg' },
+              { name: 'Two Doubles', type: 'Studio', guests: '4 guests', price: 'Select dates to see rates', image: '/images/room-06.jpg' },
+              { name: '2BR Apartment', type: '2 Bedroom', guests: '6 guests', price: 'Select dates to see rates', image: '/images/room-15.jpg' },
             ].map((unit) => (
               <div key={unit.name} className="group cursor-pointer">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 mb-4 relative">
