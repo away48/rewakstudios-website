@@ -37,7 +37,7 @@ export default function Home() {
             Rewak Studios
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 mb-8 font-light">
-            Your Home Away From Home in Alaska&apos;s Largest City
+            Extended Stay Living in Fairbanks, Alaska
           </p>
           
           {/* Quick Search */}
@@ -112,12 +112,11 @@ export default function Home() {
             Choose from four unique furnished apartments in prime Anchorage locations
           </p>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: 'Unit 1', type: '1 Bedroom', guests: '2 guests', price: 'From $125/night', image: 'https://media.xmlcal.com/pic/p0001/7757/42.png' },
-              { name: 'Unit 2', type: '1 Bedroom', guests: '2 guests', price: 'From $125/night', image: 'https://media.xmlcal.com/pic/p0001/7757/62.png' },
-              { name: 'Unit 3', type: '2 Bedroom', guests: '4 guests', price: 'From $165/night', image: 'https://media.xmlcal.com/pic/p0001/7757/46.png' },
-              { name: 'Unit 4', type: '2 Bedroom', guests: '4 guests', price: 'From $165/night', image: 'https://media.xmlcal.com/pic/p0001/7757/40.png' },
+              { name: 'Queen Room', type: 'Studio', guests: '2 guests', price: 'From $89/night', image: '/images/room-17.jpg' },
+              { name: 'Two Doubles', type: 'Studio', guests: '4 guests', price: 'From $120/night', image: '/images/room-06.jpg' },
+              { name: '2BR Apartment', type: '2 Bedroom', guests: '6 guests', price: 'From $165/night', image: '/images/room-15.jpg' },
             ].map((unit) => (
               <div key={unit.name} className="group cursor-pointer">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 mb-4 relative">
