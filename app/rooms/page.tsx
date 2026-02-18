@@ -99,12 +99,9 @@ function RoomsContent() {
     }).format(cents / 100);
   };
 
-  const getRoomPrice = (roomId: number, fallbackPrice: number) => {
+  const getRoomPrice = (roomId: number) => {
     const liveRoom = liveRooms.find(r => r.roomId === roomId);
-    if (liveRoom && liveRoom.price) {
-      return liveRoom.price;
-    }
-    return fallbackPrice;
+    return liveRoom?.price || null;
   };
 
   const isRoomAvailable = (roomId: number) => {
@@ -129,14 +126,18 @@ function RoomsContent() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {checkIn && checkOut && (
+        {checkIn && checkOut ? (
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8">
             <p className="text-blue-800">
               Showing available rooms for <strong>{guests} guests</strong>
-              {checkIn && checkOut && (
-                <> from <strong>{checkIn.slice(4,6)}/{checkIn.slice(6,8)}</strong> to <strong>{checkOut.slice(4,6)}/{checkOut.slice(6,8)}</strong></>
-              )}
+              {' '}from <strong>{checkIn.slice(4,6)}/{checkIn.slice(6,8)}</strong> to <strong>{checkOut.slice(4,6)}/{checkOut.slice(6,8)}</strong>
               {loadingPrices && <span className="ml-2 text-sm">(Loading live pricing...)</span>}
+            </p>
+          </div>
+        ) : (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
+            <p className="text-amber-800">
+              💡 <strong>Select check-in and check-out dates</strong> on the <Link href="/" className="underline font-semibold">homepage</Link> to see current availability and rates.
             </p>
           </div>
         )}
@@ -146,8 +147,9 @@ function RoomsContent() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProperties.map((property) => {
-            const currentPrice = getRoomPrice(property.roomId, property.price);
+            const currentPrice = getRoomPrice(property.roomId);
             const available = isRoomAvailable(property.roomId);
+            const hasLivePrice = currentPrice !== null;
 
             return (
               <div 
@@ -202,24 +204,37 @@ function RoomsContent() {
                   
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div>
-                      <span className="text-2xl font-bold text-slate-900">
-                        {formatPrice(currentPrice)}
-                      </span>
-                      <span className="text-slate-500 text-sm"> / night</span>
+                      {hasLivePrice ? (
+                        <>
+                          <span className="text-2xl font-bold text-slate-900">
+                            {formatPrice(currentPrice!)}
+                          </span>
+                          <span className="text-slate-500 text-sm"> / night</span>
+                        </>
+                      ) : (
+                        <span className="text-slate-600 text-sm">Select dates to see rates</span>
+                      )}
                     </div>
-                    {available ? (
+                    {hasLivePrice && available ? (
                       <Link
                         href={`/checkout?room=${property.id}&roomId=${property.roomId}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                       >
                         Book Now
                       </Link>
-                    ) : (
+                    ) : hasLivePrice && !available ? (
                       <button 
                         disabled
                         className="bg-slate-300 text-slate-500 font-semibold py-3 px-6 rounded-xl cursor-not-allowed"
                       >
                         Unavailable
+                      </button>
+                    ) : (
+                      <button 
+                        disabled
+                        className="bg-slate-200 text-slate-400 font-semibold py-3 px-6 rounded-xl cursor-not-allowed"
+                      >
+                        Select Dates
                       </button>
                     )}
                   </div>
