@@ -268,7 +268,6 @@ function CheckoutContent() {
     email: '',
     phone: '',
   });
-  const [guestInfoConfirmed, setGuestInfoConfirmed] = useState(false);
 
   const property = searchParams.get('property') || '';
   const checkIn = searchParams.get('checkIn') || '';
@@ -299,9 +298,10 @@ function CheckoutContent() {
       });
   }, [property, checkIn, checkOut, guests]);
 
-  // Create Stripe payment intent when card is selected and guest info confirmed
+  // Create Stripe payment intent when card is selected and guest info is filled
   useEffect(() => {
-    if (paymentMethod !== 'card' || !pricingData || !guestInfoConfirmed) return;
+    if (paymentMethod !== 'card' || !pricingData) return;
+    if (!guestInfo.firstName || !guestInfo.lastName || !guestInfo.email) return;
 
     setStripeLoading(true);
     fetch('/api/payment/stripe', {
@@ -330,7 +330,7 @@ function CheckoutContent() {
         setPaymentError('Failed to initialize payment');
         setStripeLoading(false);
       });
-  }, [paymentMethod, pricingData, guestInfoConfirmed]);
+  }, [paymentMethod, pricingData, guestInfo.firstName, guestInfo.lastName, guestInfo.email]);
 
   const handlePaymentSuccess = (result: any) => {
     setPaymentSuccess(result);
@@ -406,153 +406,130 @@ function CheckoutContent() {
           {/* Left: Form */}
           <div className="lg:col-span-3 space-y-6">
             {/* Guest Info */}
-            {!guestInfoConfirmed ? (
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 className="text-xl font-bold mb-4">Guest Information</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
-                    <input
-                      type="text"
-                      value={guestInfo.firstName}
-                      onChange={(e) => setGuestInfo({ ...guestInfo, firstName: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
-                    <input
-                      type="text"
-                      value={guestInfo.lastName}
-                      onChange={(e) => setGuestInfo({ ...guestInfo, lastName: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2 className="text-xl font-bold mb-4">Guest Information</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
                   <input
-                    type="email"
-                    value={guestInfo.email}
-                    onChange={(e) => setGuestInfo({ ...guestInfo, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                    type="text"
+                    value={guestInfo.firstName}
+                    onChange={(e) => setGuestInfo({ ...guestInfo, firstName: e.target.value })}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                 </div>
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
                   <input
-                    type="tel"
-                    value={guestInfo.phone}
-                    onChange={(e) => setGuestInfo({ ...guestInfo, phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                    type="text"
+                    value={guestInfo.lastName}
+                    onChange={(e) => setGuestInfo({ ...guestInfo, lastName: e.target.value })}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                 </div>
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={guestInfo.email}
+                  onChange={(e) => setGuestInfo({ ...guestInfo, email: e.target.value })}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  value={guestInfo.phone}
+                  onChange={(e) => setGuestInfo({ ...guestInfo, phone: e.target.value })}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Payment Method Selection */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2 className="text-xl font-bold mb-4">Payment Method</h2>
+              
+              <div className="grid grid-cols-2 gap-4 mb-6">
                 <button
-                  onClick={() => {
-                    if (guestInfo.firstName && guestInfo.lastName && guestInfo.email) {
-                      setGuestInfoConfirmed(true);
-                    }
-                  }}
-                  className="w-full mt-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+                  onClick={() => { setPaymentMethod('card'); setPaymentError(''); }}
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    paymentMethod === 'card'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
                 >
-                  Continue to Payment
+                  <div className="text-lg font-semibold mb-1">💳 Credit Card</div>
+                  <div className="text-sm text-slate-500">{pricing.isLongTerm ? '3% processing fee' : 'No additional fees'}</div>
+                  <div className="text-lg font-bold mt-2 text-blue-600">
+                    {formatCurrency(
+                      pricing.isLongTerm && pricing.billingSchedule?.length
+                        ? pricing.billingSchedule[0].totalWithCCFee
+                        : pricing.totalWithCCFee
+                    )}
+                    {pricing.isLongTerm && <span className="text-xs font-normal text-slate-500"> /first month</span>}
+                  </div>
+                </button>
+                <button
+                  onClick={() => { setPaymentMethod('ach'); setPaymentError(''); }}
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    paymentMethod === 'ach'
+                      ? 'border-green-600 bg-green-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="text-lg font-semibold mb-1">🏦 Bank Transfer</div>
+                  <div className="text-sm text-green-600 font-medium">{pricing.isLongTerm ? 'No processing fee — save 3%!' : 'No additional fees'}</div>
+                  <div className="text-lg font-bold mt-2 text-green-600">
+                    {formatCurrency(
+                      pricing.isLongTerm && pricing.billingSchedule?.length
+                        ? pricing.billingSchedule[0].total
+                        : pricing.totalACH
+                    )}
+                    {pricing.isLongTerm && <span className="text-xs font-normal text-slate-500"> /first month</span>}
+                  </div>
                 </button>
               </div>
-            ) : (
-              <>
-                {/* Guest info summary */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                  <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-lg font-bold">Guest</h2>
-                    <button onClick={() => setGuestInfoConfirmed(false)} className="text-blue-600 text-sm hover:underline">Edit</button>
-                  </div>
-                  <p className="text-slate-600">{guestInfo.firstName} {guestInfo.lastName} · {guestInfo.email}</p>
+
+              {paymentError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+                  <p className="text-red-700 text-sm">{paymentError}</p>
                 </div>
+              )}
 
-                {/* Payment Method Selection */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                  <h2 className="text-xl font-bold mb-4">Payment Method</h2>
-                  
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <button
-                      onClick={() => { setPaymentMethod('card'); setPaymentError(''); }}
-                      className={`p-4 rounded-xl border-2 transition-all text-left ${
-                        paymentMethod === 'card'
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="text-lg font-semibold mb-1">💳 Credit Card</div>
-                      <div className="text-sm text-slate-500">{pricing.isLongTerm ? '3% processing fee' : 'No additional fees'}</div>
-                      <div className="text-lg font-bold mt-2 text-blue-600">
-                        {formatCurrency(
-                          pricing.isLongTerm && pricing.billingSchedule?.length
-                            ? pricing.billingSchedule[0].totalWithCCFee
-                            : pricing.totalWithCCFee
-                        )}
-                        {pricing.isLongTerm && <span className="text-xs font-normal text-slate-500"> /first month</span>}
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => { setPaymentMethod('ach'); setPaymentError(''); }}
-                      className={`p-4 rounded-xl border-2 transition-all text-left ${
-                        paymentMethod === 'ach'
-                          ? 'border-green-600 bg-green-50'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="text-lg font-semibold mb-1">🏦 Bank Transfer</div>
-                      <div className="text-sm text-green-600 font-medium">{pricing.isLongTerm ? 'No processing fee — save 3%!' : 'No additional fees'}</div>
-                      <div className="text-lg font-bold mt-2 text-green-600">
-                        {formatCurrency(
-                          pricing.isLongTerm && pricing.billingSchedule?.length
-                            ? pricing.billingSchedule[0].total
-                            : pricing.totalACH
-                        )}
-                        {pricing.isLongTerm && <span className="text-xs font-normal text-slate-500"> /first month</span>}
-                      </div>
-                    </button>
+              {paymentMethod === 'card' && (
+                stripeLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                    <p className="text-sm text-slate-500">Initializing secure payment...</p>
                   </div>
-
-                  {paymentError && (
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
-                      <p className="text-red-700 text-sm">{paymentError}</p>
-                    </div>
-                  )}
-
-                  {paymentMethod === 'card' && (
-                    stripeLoading ? (
-                      <div className="text-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                        <p className="text-sm text-slate-500">Initializing secure payment...</p>
-                      </div>
-                    ) : clientSecret ? (
-                      <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
-                        <StripePaymentForm
-                          pricingData={pricingData}
-                          guestInfo={guestInfo}
-                          onSuccess={handlePaymentSuccess}
-                          onError={setPaymentError}
-                        />
-                      </Elements>
-                    ) : null
-                  )}
-
-                  {paymentMethod === 'ach' && (
-                    <ACHPaymentForm
+                ) : clientSecret ? (
+                  <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
+                    <StripePaymentForm
                       pricingData={pricingData}
                       guestInfo={guestInfo}
                       onSuccess={handlePaymentSuccess}
                       onError={setPaymentError}
                     />
-                  )}
-                </div>
-              </>
-            )}
+                  </Elements>
+                ) : null
+              )}
+
+              {paymentMethod === 'ach' && (
+                <ACHPaymentForm
+                  pricingData={pricingData}
+                  guestInfo={guestInfo}
+                  onSuccess={handlePaymentSuccess}
+                  onError={setPaymentError}
+                />
+              )}
+            </div>
           </div>
 
           {/* Right: Price Summary */}
@@ -564,6 +541,21 @@ function CheckoutContent() {
                 <p>🌙 {pricing.nights} nights</p>
                 <p>👥 {pricingData.guests} guests</p>
               </div>
+
+              {/* Nightly Rate Breakdown */}
+              {pricing.nightlyRates && pricing.nightlyRates.length > 0 && (
+                <div className="border-t pt-4 mb-4">
+                  <h3 className="font-semibold text-sm mb-3">Nightly Rates</h3>
+                  <div className="space-y-1.5 text-sm max-h-48 overflow-y-auto">
+                    {pricing.nightlyRates.map((night) => (
+                      <div key={night.date} className="flex justify-between text-slate-600">
+                        <span>{formatDate(night.date)}</span>
+                        <span>{formatCurrency(night.rate)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="border-t pt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -610,8 +602,7 @@ function CheckoutContent() {
                 </div>
               )}
 
-              {paymentMethod === 'card' && guestInfoConfirmed && (
-                {pricing.isLongTerm && (
+              {paymentMethod === 'card' && pricing.isLongTerm && (
                 <div className="border-t mt-4 pt-4 text-xs text-slate-500">
                   <p>💳 Credit card: +{formatCurrency(
                     pricing.billingSchedule?.length
@@ -619,10 +610,9 @@ function CheckoutContent() {
                       : pricing.ccFeeAmount
                   )} processing fee (3%)</p>
                 </div>
-                )}
               )}
 
-              {paymentMethod === 'ach' && guestInfoConfirmed && (
+              {paymentMethod === 'ach' && (
                 <div className="border-t mt-4 pt-4 text-xs text-green-600">
                   <p>🏦 ACH bank transfer: No processing fee!</p>
                 </div>
