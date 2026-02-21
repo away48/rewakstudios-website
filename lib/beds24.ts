@@ -49,8 +49,10 @@ export interface RoomOffer {
 export async function getOffers(checkIn: string, checkOut: string, guests: number = 2): Promise<{
   success: boolean;
   rooms: RoomOffer[];
+  nights: number;
   error?: string;
 }> {
+  const nights = Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
   try {
     const response = await fetch(`${BEDS24_V2_API}/inventory/offers`, {
       method: 'POST',
@@ -67,13 +69,13 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
     });
 
     if (!response.ok) {
-      return { success: false, rooms: [], error: `API error: ${response.status}` };
+      return { success: false, rooms: [], nights, error: `API error: ${response.status}` };
     }
 
     const data = await response.json();
     
     if (!data.success || !data.data) {
-      return { success: false, rooms: [], error: data.error || 'No rooms found' };
+      return { success: false, rooms: [], nights, error: data.error || 'No rooms found' };
     }
 
     // Map API response to our 3 room types
@@ -93,10 +95,10 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
         };
       });
 
-    return { success: true, rooms };
+    return { success: true, rooms, nights };
   } catch (error) {
     console.error('Beds24 API error:', error);
-    return { success: false, rooms: [], error: String(error) };
+    return { success: false, rooms: [], nights, error: String(error) };
   }
 }
 
