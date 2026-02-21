@@ -19,7 +19,7 @@ export const ROOM_IDS: Record<string, number> = {
 export const ROOM_INFO: Record<number, { name: string; slug: string; maxGuests: number; minPrice: number }> = {
   13092: { name: 'Queen Room', slug: 'queen', maxGuests: 2, minPrice: 97 },
   56674: { name: 'Two Doubles', slug: 'two-doubles', maxGuests: 4, minPrice: 120 },
-  411888: { name: '2BR Apartment', slug: 'apartment-2br', maxGuests: 6, minPrice: 165 },
+  411888: { name: '2BR Apartment', slug: 'apartment-2br', maxGuests: 4, minPrice: 165 },
 };
 
 function getV2Token(): string {

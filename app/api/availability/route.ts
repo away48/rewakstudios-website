@@ -14,8 +14,13 @@ export async function GET(request: NextRequest) {
     }, { status: 400 });
   }
 
+  // Normalize date format: accept YYYYMMDD or YYYY-MM-DD
+  const normDate = (d: string) => d.includes('-') ? d : `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+  const checkInNorm = normDate(checkIn);
+  const checkOutNorm = normDate(checkOut);
+
   try {
-    const result = await getOffers(checkIn, checkOut, guests);
+    const result = await getOffers(checkInNorm, checkOutNorm, guests);
     return NextResponse.json(result);
   } catch (error) {
     console.error('Availability API error:', error);

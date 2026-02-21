@@ -98,7 +98,7 @@ export default function Home() {
             </form>
             
             <p className="text-sm text-slate-500 mt-4">
-              4 unique properties • Weekly rates available • Book direct &amp; save
+              3 unique rooms • Nightly, Weekly &amp; Monthly rates • Book direct &amp; save
             </p>
           </div>
         </div>
@@ -107,16 +107,16 @@ export default function Home() {
       {/* Properties Preview */}
       <section className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Our Properties</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Our Rooms</h2>
           <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">
-            Choose from four unique furnished apartments in prime Anchorage locations
+            Choose from three unique rooms at Rewak Studios in Fairbanks, AK
           </p>
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { name: 'Queen Room', type: 'Studio', guests: '2 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/17.png' },
               { name: 'Two Doubles', type: 'Studio', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/06.png' },
-              { name: '2BR Apartment', type: '2 Bedroom', guests: '6 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/15.png' },
+              { name: '2BR Apartment', type: '2 Bedroom', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/15.png' },
             ].map((unit) => (
               <div key={unit.name} className="group cursor-pointer">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 mb-4 relative">
@@ -139,7 +139,7 @@ export default function Home() {
               href="/rooms"
               className="inline-block bg-slate-900 hover:bg-slate-800 text-white font-semibold py-4 px-8 rounded-xl transition-colors"
             >
-              View All Properties
+              View All Rooms
             </Link>
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Why Stay With Us?</h2>
           <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">
-            More than a hotel room — a real home for your Anchorage stay
+            More than a hotel room — a real home for your Fairbanks stay
           </p>
           
           <div className="grid md:grid-cols-4 gap-8">
@@ -175,20 +175,20 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Explore Anchorage</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Explore Fairbanks</h2>
               <p className="text-slate-600 mb-6">
-                Alaska&apos;s largest city offers incredible outdoor adventures, vibrant culture, 
-                and stunning mountain views. Our properties put you in the heart of it all.
+                Fairbanks sits at the heart of Alaska — the northern lights capital, gateway to Denali, 
+                and home to the University of Alaska. Our studios put you close to everything.
               </p>
               
               <ul className="space-y-3">
                 {[
-                  '🚶 Downtown & 5th Ave Mall — 0.6 miles (14 min walk)',
-                  '🎓 UAA (University of Alaska) — 3.3 miles (10 min)',
-                  '🏥 Providence Hospital — 3.8 miles (13 min)',
-                  '✈️ Ted Stevens Airport — 5.5 miles (12 min)',
-                  '🏥 Alaska Regional Hospital — 2.4 miles (9 min)',
-                  '🛤️ Tony Knowles Coastal Trail — 1.3 miles',
+                  '🎓 University of Alaska Fairbanks — ~4 miles',
+                  '🏥 Fairbanks Memorial Hospital — ~3 miles',
+                  '✈️ Fairbanks International Airport — ~4 miles',
+                  '🏙️ Downtown Fairbanks — ~4 miles',
+                  '🛒 Walmart & Fred Meyer — ~2 miles',
+                  '🌌 Aurora viewing — available right from property',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3">
                     <span className="text-blue-500">✓</span>
@@ -199,7 +199,7 @@ export default function Home() {
             </div>
             
             <div className="aspect-video rounded-2xl overflow-hidden shadow-lg bg-slate-200">
-              <div className="w-full h-full bg-[url('https://media.xmlcal.com/pic/p0001/7757/01.png')] bg-cover bg-center" />
+              <div className="w-full h-full bg-[url('https://media.xmlcal.com/pic/p0000/5780/01.png')] bg-cover bg-center" />
             </div>
           </div>
         </div>
@@ -218,10 +218,10 @@ export default function Home() {
               href="/rooms"
               className="inline-block bg-white text-blue-600 font-semibold py-4 px-8 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
             >
-              Browse Properties
+              Browse Rooms
             </Link>
             <a 
-              href="tel:+19073123456"
+              href="tel:+18888518324"
               className="inline-block bg-blue-500 text-white font-semibold py-4 px-8 rounded-xl hover:bg-blue-400 transition-colors border-2 border-blue-400"
             >
               Call Us
@@ -243,7 +243,7 @@ export default function Home() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2 text-slate-400 text-sm">
-              <li><Link href="/rooms" className="hover:text-white transition-colors">All Properties</Link></li>
+              <li><Link href="/rooms" className="hover:text-white transition-colors">All Rooms</Link></li>
               <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
             </ul>

@@ -47,11 +47,11 @@ const properties = [
     name: '2-Bedroom Apartment',
     type: '2 Bedroom Apartment',
     beds: '1 Queen, 1 Double',
-    guests: 6,
+    guests: 4,
     bathrooms: 1,
     sqft: 750,
     price: 16500, // $165 baseline
-    description: 'Full 2-bedroom apartment with complete kitchen, living area, and private bath. Perfect for families or extended stays.',
+    description: 'Full 2-bedroom apartment with complete kitchen, living area, and private bath. Perfect for small families or extended stays.',
     amenities: ['Full Kitchen', 'WiFi', 'Free Parking', 'Smart TV', 'Living Area'],
     images: [
       'https://media.xmlcal.com/pic/p0000/5780/15.png',
@@ -69,6 +69,7 @@ function RoomsContent() {
   const [filteredProperties, setFilteredProperties] = useState(properties);
   const [loadingPrices, setLoadingPrices] = useState(false);
   const [liveRooms, setLiveRooms] = useState<any[]>([]);
+  const [expandedAmenities, setExpandedAmenities] = useState<Set<string>>(new Set());
   
   useEffect(() => {
     const filtered = properties.filter(p => p.guests >= guests);
@@ -143,7 +144,8 @@ function RoomsContent() {
         )}
 
         <h1 className="text-3xl font-bold mb-2">Available Rooms</h1>
-        <p className="text-slate-600 mb-8">3483 Rewak Dr, Fairbanks, AK 99709</p>
+        <p className="text-slate-600 mb-1">3483 Rewak Dr, Fairbanks, AK 99709</p>
+        <p className="text-sm text-blue-600 mb-8">✓ Nightly, Weekly &amp; Monthly rates available</p>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProperties.map((property) => {
@@ -187,7 +189,7 @@ function RoomsContent() {
                   </div>
                   
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {property.amenities.slice(0, 3).map((amenity) => (
+                    {(expandedAmenities.has(property.id) ? property.amenities : property.amenities.slice(0, 3)).map((amenity) => (
                       <span 
                         key={amenity}
                         className="bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full"
@@ -196,9 +198,16 @@ function RoomsContent() {
                       </span>
                     ))}
                     {property.amenities.length > 3 && (
-                      <span className="text-slate-500 text-xs px-2 py-1">
-                        +{property.amenities.length - 3} more
-                      </span>
+                      <button
+                        onClick={() => setExpandedAmenities(prev => {
+                          const next = new Set(prev);
+                          next.has(property.id) ? next.delete(property.id) : next.add(property.id);
+                          return next;
+                        })}
+                        className="text-blue-600 text-xs px-2 py-1 hover:underline cursor-pointer"
+                      >
+                        {expandedAmenities.has(property.id) ? 'Show less' : `+${property.amenities.length - 3} more`}
+                      </button>
                     )}
                   </div>
                   
