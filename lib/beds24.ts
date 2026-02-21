@@ -22,16 +22,16 @@ export const ROOM_TYPES: RoomType[] = [
     name: 'Queen Room',
     maxGuests: 2,
     minPrice: 97,
-    // 200-level rooms in Beds24
-    roomIds: [13092, 61044, 61096, 61098, 61100, 61104, 61105, 61108, 61110, 61111],
+    // Parent room ID — already aggregates availability across all queen units
+    roomIds: [13092],
   },
   {
     slug: 'two-doubles',
     name: 'Two Doubles',
     maxGuests: 4,
     minPrice: 120,
-    // 100-level rooms in Beds24
-    roomIds: [13091, 56674, 57477, 61094, 61095, 61099, 61101, 61106, 61109],
+    // Parent room ID — already aggregates availability across all double units
+    roomIds: [13091],
   },
   {
     slug: 'apartment-2br',
