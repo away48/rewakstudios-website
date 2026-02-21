@@ -132,13 +132,13 @@ function RoomsContent() {
     }).format(cents / 100);
   };
 
-  const getRoomPrice = (roomId: number) => {
-    const liveRoom = liveRooms.find(r => r.roomId === roomId);
+  const getRoomPrice = (slug: string) => {
+    const liveRoom = liveRooms.find(r => r.slug === slug);
     return liveRoom?.price || null;
   };
 
-  const isRoomAvailable = (roomId: number) => {
-    const liveRoom = liveRooms.find(r => r.roomId === roomId);
+  const isRoomAvailable = (slug: string) => {
+    const liveRoom = liveRooms.find(r => r.slug === slug);
     return liveRoom ? liveRoom.available : true; // Default to available if no live data
   };
 
@@ -222,8 +222,8 @@ function RoomsContent() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProperties.map((property) => {
-            const currentPrice = getRoomPrice(property.roomId);
-            const available = isRoomAvailable(property.roomId);
+            const currentPrice = getRoomPrice(property.id);
+            const available = isRoomAvailable(property.id);
             const hasLivePrice = currentPrice !== null;
 
             return (
@@ -304,7 +304,7 @@ function RoomsContent() {
                     </div>
                     {hasLivePrice && available ? (
                       <Link
-                        href={`/checkout?room=${property.id}&roomId=${property.roomId}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
+                        href={`/checkout?room=${property.id}&roomId=${property.id}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                       >
                         Book Now
