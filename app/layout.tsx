@@ -5,12 +5,12 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Stay Anchorage | Short-Term Rentals in Anchorage, Alaska',
-  description: 'Comfortable furnished apartments for short and extended stays in Anchorage, Alaska. Perfect for business travelers, relocations, and visitors.',
-  keywords: 'Anchorage rentals, short-term rental, furnished apartment, Alaska lodging, extended stay Anchorage',
+  title: 'Rewak Studios | Short-Term Rentals in Fairbanks, Alaska',
+  description: 'Comfortable furnished rooms for short and extended stays in Fairbanks, Alaska. Perfect for business travelers, relocations, and visitors. Nightly, weekly, and monthly rates.',
+  keywords: 'Fairbanks rentals, short-term rental, furnished room, Alaska lodging, extended stay Fairbanks, Rewak Studios',
   openGraph: {
-    title: 'Stay Anchorage | Short-Term Rentals',
-    description: 'Comfortable furnished apartments in Anchorage, Alaska',
+    title: 'Rewak Studios | Short-Term Rentals in Fairbanks',
+    description: 'Comfortable furnished rooms at 3483 Rewak Drive, Fairbanks, Alaska',
     type: 'website',
   },
 }

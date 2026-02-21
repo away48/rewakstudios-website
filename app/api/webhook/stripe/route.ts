@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
                   arrival: m.arrival, departure: m.departure,
                   periodNumber: String(period.periodNumber), scheduledDate: period.startDate,
                 },
-                description: `Stay Anchorage - ${m.roomSlug} | Period ${period.periodNumber} (${period.startDate} to ${period.endDate})`,
+                description: `Rewak Studios - ${m.roomSlug} | Period ${period.periodNumber} (${period.startDate} to ${period.endDate})`,
               });
             }
           }

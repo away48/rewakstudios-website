@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         } : {}),
       },
       receipt_email: email,
-      description: `Stay Anchorage - ${roomSlug} | ${arrival} to ${departure}${pricing.isLongTerm ? ` | Period 1/${pricing.billingSchedule?.length}` : ''}`,
+      description: `Rewak Studios - ${roomSlug} | ${arrival} to ${departure}${pricing.isLongTerm ? ` | Period 1/${pricing.billingSchedule?.length}` : ''}`,
     });
 
     return NextResponse.json({

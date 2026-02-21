@@ -29,7 +29,7 @@ export default function Home() {
     <main className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[80vh] bg-gradient-to-br from-primary via-slate-800 to-blue-900 flex items-center justify-center">
-        <div className="absolute inset-0 bg-[url('https://media.xmlcal.com/pic/p0000/7757/01.png')] bg-cover bg-center opacity-30" />
+        <div className="absolute inset-0 bg-[url('https://media.xmlcal.com/pic/p0000/5780/01.png')] bg-cover bg-center opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
         
         <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
@@ -236,7 +236,7 @@ export default function Home() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Rewak Studios</h3>
             <p className="text-slate-400 text-sm">
-              Fairbanks, AK 99709<br />
+              3483 Rewak Drive, Fairbanks, AK 99709<br />
               <a href="mailto:info@rewakstudios.com" className="hover:text-white transition-colors">info@rewakstudios.com</a>
             </p>
           </div>

@@ -344,7 +344,7 @@ function CheckoutContent() {
           <div className="text-6xl mb-4">✅</div>
           <h1 className="text-2xl font-bold mb-2">Booking Confirmed!</h1>
           <p className="text-slate-600 mb-6">
-            Your reservation at Stay Anchorage has been confirmed.
+            Your reservation at Rewak Studios has been confirmed.
             {pricingData?.pricing.isLongTerm && ' Your first month has been charged. Recurring payments will be processed monthly.'}
           </p>
           <div className="bg-slate-50 rounded-xl p-4 text-left mb-6">
@@ -395,7 +395,7 @@ function CheckoutContent() {
     <main className="min-h-screen bg-slate-50">
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-slate-900">Stay Anchorage</Link>
+          <Link href="/" className="text-xl font-bold text-slate-900">Rewak Studios</Link>
           <Link href="/rooms" className="text-blue-600 hover:text-blue-700 font-medium">← Back</Link>
         </div>
       </header>
