@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOffers, getCalendarRates, ROOM_IDS, ROOM_INFO } from '@/lib/beds24';
+import { getOffers, getCalendarRates, ROOM_IDS, ROOM_INFO, ROOM_TYPES } from '@/lib/beds24';
 import { calculatePricing } from '@/lib/pricing';
 
 export async function GET(req: NextRequest) {
@@ -16,21 +16,22 @@ export async function GET(req: NextRequest) {
   const arrival = checkIn.includes('-') ? checkIn : `${checkIn.slice(0,4)}-${checkIn.slice(4,6)}-${checkIn.slice(6,8)}`;
   const departure = checkOut.includes('-') ? checkOut : `${checkOut.slice(0,4)}-${checkOut.slice(4,6)}-${checkOut.slice(6,8)}`;
 
-  const roomId = ROOM_IDS[roomSlug];
-  if (!roomId) {
+  const roomType = ROOM_TYPES.find(rt => rt.slug === roomSlug);
+  if (!roomType) {
     return NextResponse.json({ error: 'Invalid room' }, { status: 400 });
   }
-
-  const roomInfo = ROOM_INFO[roomId];
 
   try {
     const { rooms, nights, error } = await getOffers(arrival, departure, guests);
     if (error) return NextResponse.json({ error }, { status: 400 });
 
-    const room = rooms.find(r => r.roomId === roomId);
+    // Find by slug — getOffers now aggregates across all physical rooms per type
+    const room = rooms.find(r => r.slug === roomSlug);
     if (!room || !room.available) {
       return NextResponse.json({ error: 'Unit not available for selected dates' }, { status: 400 });
     }
+
+    const roomId = room.roomId; // The best available physical room
 
     let nightlyRates = room.nightlyRates;
     if (!nightlyRates.length && room.price) {
@@ -55,7 +56,7 @@ export async function GET(req: NextRequest) {
     const pricing = calculatePricing(nightlyRates);
 
     return NextResponse.json({
-      room: { roomId, name: roomInfo.name, slug: roomSlug, maxGuests: roomInfo.maxGuests },
+      room: { roomId, name: roomType.name, slug: roomSlug, maxGuests: roomType.maxGuests },
       arrival, departure, guests, pricing,
     });
   } catch (error) {

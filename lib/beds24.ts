@@ -7,18 +7,51 @@
 const BEDS24_JSON_API = 'https://api.beds24.com/json';
 const PROP_ID = 5780;
 
-// Room IDs for Rewak Studios
-export const ROOM_IDS: Record<string, number> = {
-  'queen': 13092,
-  'two-doubles': 56674,
-  'apartment-2br': 411888, // TODO: Verify this is "Unit 5"
-};
+// Room type definitions — each type may have multiple physical rooms in Beds24
+interface RoomType {
+  slug: string;
+  name: string;
+  maxGuests: number;
+  minPrice: number;
+  roomIds: number[]; // All Beds24 room IDs for this type
+}
 
-export const ROOM_INFO: Record<number, { name: string; slug: string; maxGuests: number; minPrice: number }> = {
-  13092: { name: 'Queen Room', slug: 'queen', maxGuests: 2, minPrice: 97 },
-  56674: { name: 'Two Doubles', slug: 'two-doubles', maxGuests: 4, minPrice: 120 },
-  411888: { name: '2BR Apartment', slug: 'apartment-2br', maxGuests: 4, minPrice: 165 },
-};
+export const ROOM_TYPES: RoomType[] = [
+  {
+    slug: 'queen',
+    name: 'Queen Room',
+    maxGuests: 2,
+    minPrice: 97,
+    // 200-level rooms in Beds24
+    roomIds: [13092, 61044, 61096, 61098, 61100, 61104, 61105, 61108, 61110, 61111],
+  },
+  {
+    slug: 'two-doubles',
+    name: 'Two Doubles',
+    maxGuests: 4,
+    minPrice: 120,
+    // 100-level rooms in Beds24
+    roomIds: [13091, 56674, 57477, 61094, 61095, 61099, 61101, 61106, 61109],
+  },
+  {
+    slug: 'apartment-2br',
+    name: '2BR Apartment',
+    maxGuests: 4,
+    minPrice: 165,
+    roomIds: [411888],
+  },
+];
+
+// Legacy lookups (used by checkout API)
+export const ROOM_IDS: Record<string, number> = Object.fromEntries(
+  ROOM_TYPES.map(rt => [rt.slug, rt.roomIds[0]])
+);
+export const ROOM_INFO: Record<number, { name: string; slug: string; maxGuests: number; minPrice: number }> = {};
+for (const rt of ROOM_TYPES) {
+  for (const id of rt.roomIds) {
+    ROOM_INFO[id] = { name: rt.name, slug: rt.slug, maxGuests: rt.maxGuests, minPrice: rt.minPrice };
+  }
+}
 
 function getV1ApiKey(): string {
   const key = process.env.BEDS24_API_KEY;
@@ -74,17 +107,32 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
 
     const data = await response.json();
 
-    // Map our 3 room types from the response (room IDs are keys in the response)
-    const rooms: RoomOffer[] = Object.values(ROOM_IDS).map((roomId) => {
-      const roomData = data[String(roomId)];
-      const roomInfo = ROOM_INFO[roomId];
-      const available = roomData ? Number(roomData.roomsavail) > 0 : false;
-      const totalPriceDollars = roomData?.price ? Number(roomData.price) : null;
+    // Aggregate availability across all physical rooms per type
+    const rooms: RoomOffer[] = ROOM_TYPES.map((roomType) => {
+      // Find the first available room in this type group
+      let bestRoom: { id: number; price: number } | null = null;
+      let totalAvail = 0;
+
+      for (const rid of roomType.roomIds) {
+        const roomData = data[String(rid)];
+        if (!roomData) continue;
+        const avail = Number(roomData.roomsavail) || 0;
+        totalAvail += avail;
+        if (avail > 0 && roomData.price != null) {
+          const price = Number(roomData.price);
+          // Pick the cheapest available room
+          if (!bestRoom || price < bestRoom.price) {
+            bestRoom = { id: rid, price };
+          }
+        }
+      }
+
+      const available = totalAvail > 0;
+      const totalPriceDollars = bestRoom?.price ?? null;
       const nightlyRateDollars = totalPriceDollars && nights > 0
         ? Math.round((totalPriceDollars / nights) * 100) / 100
         : null;
 
-      // Build nightly breakdown (even rate per night)
       const nightlyRates = nightlyRateDollars
         ? Array.from({ length: nights }, (_, i) => {
             const d = toDate(checkIn);
@@ -94,13 +142,13 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
         : [];
 
       return {
-        roomId,
-        roomName: roomInfo?.name || `Room ${roomId}`,
-        slug: roomInfo?.slug || `room-${roomId}`,
+        roomId: bestRoom?.id ?? roomType.roomIds[0],
+        roomName: roomType.name,
+        slug: roomType.slug,
         available,
-        price: totalPriceDollars ? Math.round(totalPriceDollars * 100) : null, // store as cents
+        price: totalPriceDollars ? Math.round(totalPriceDollars * 100) : null,
         nightlyRates,
-        maxGuests: roomInfo?.maxGuests || 4,
+        maxGuests: roomType.maxGuests,
       };
     });
 
