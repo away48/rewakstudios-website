@@ -54,8 +54,8 @@ const properties = [
     description: 'Full 2-bedroom apartment with complete kitchen, living area, and private bath. Perfect for small families or extended stays.',
     amenities: ['Full Kitchen', 'WiFi', 'Free Parking', 'Smart TV', 'Living Area'],
     images: [
-      'https://media.xmlcal.com/pic/p0000/5780/15.png',
-      'https://media.xmlcal.com/pic/p0000/5780/01.png',
+      'https://media.xmlcal.com/pic/p0000/5780/02.png',
+      'https://media.xmlcal.com/pic/p0000/5780/30.png',
     ],
   },
 ];

@@ -29,7 +29,7 @@ export default function Home() {
     <main className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[80vh] bg-gradient-to-br from-primary via-slate-800 to-blue-900 flex items-center justify-center">
-        <div className="absolute inset-0 bg-[url('https://media.xmlcal.com/pic/p0000/5780/01.png')] bg-cover bg-center opacity-30" />
+        <div className="absolute inset-0 bg-[url('https://media.xmlcal.com/pic/p0000/5780/19.png')] bg-cover bg-center opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
         
         <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
@@ -97,9 +97,7 @@ export default function Home() {
               </div>
             </form>
             
-            <p className="text-sm text-slate-500 mt-4">
-              3 unique rooms • Nightly, Weekly &amp; Monthly rates • Book direct &amp; save
-            </p>
+
           </div>
         </div>
       </section>
@@ -116,7 +114,7 @@ export default function Home() {
             {[
               { name: 'Queen Room', type: 'Studio', guests: '2 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/17.png' },
               { name: 'Two Doubles', type: 'Studio', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/06.png' },
-              { name: '2BR Apartment', type: '2 Bedroom', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/15.png' },
+              { name: '2BR Apartment', type: '2 Bedroom', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/02.png' },
             ].map((unit) => (
               <div key={unit.name} className="group cursor-pointer">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 mb-4 relative">
@@ -199,7 +197,7 @@ export default function Home() {
             </div>
             
             <div className="aspect-video rounded-2xl overflow-hidden shadow-lg bg-slate-200">
-              <div className="w-full h-full bg-[url('https://media.xmlcal.com/pic/p0000/5780/01.png')] bg-cover bg-center" />
+              <div className="w-full h-full bg-[url('https://media.xmlcal.com/pic/p0000/5780/29.png')] bg-cover bg-center" />
             </div>
           </div>
         </div>
