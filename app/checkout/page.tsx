@@ -584,6 +584,13 @@ function CheckoutContent() {
                 </div>
               </div>
 
+              <div className="border-t mt-4 pt-4">
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+                  <p className="font-semibold mb-1">🔒 Security Deposit</p>
+                  <p>A <strong>$100 temporary authorization</strong> will be placed on your payment method prior to check-in. This hold is released after checkout, provided no damages.</p>
+                </div>
+              </div>
+
               {/* Long-term billing schedule */}
               {pricing.isLongTerm && pricing.billingSchedule && (
                 <div className="border-t mt-4 pt-4">

@@ -218,7 +218,8 @@ function RoomsContent() {
 
         <h1 className="text-3xl font-bold mb-2">Available Rooms</h1>
         <p className="text-slate-600 mb-1">3483 Rewak Drive, Fairbanks, AK 99709</p>
-        <p className="text-sm text-blue-600 mb-8">✓ Nightly, Weekly &amp; Monthly rates available</p>
+        <p className="text-sm text-blue-600 mb-2">✓ Nightly, Weekly &amp; Monthly rates available</p>
+        <p className="text-xs text-slate-500 mb-8">🔒 A $100 refundable security deposit authorization is required prior to check-in.</p>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProperties.map((property) => {
