@@ -250,6 +250,7 @@ export default function Home() {
               <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link href="/cancellation" className="hover:text-white transition-colors">Cancellation Policy</Link></li>
+              <li><Link href="/accessibility" className="hover:text-white transition-colors">Accessibility</Link></li>
             </ul>
           </div>
         </div>

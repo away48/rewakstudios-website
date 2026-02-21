@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 // Rewak Studios rooms from Beds24 (propId: 5780, Fairbanks AK)
@@ -60,17 +60,47 @@ const properties = [
   },
 ];
 
+// Convert YYYYMMDD → YYYY-MM-DD for date inputs
+const toInputDate = (d: string) => d && d.length === 8 ? `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}` : d;
+// Convert YYYY-MM-DD → YYYYMMDD for URL params
+const toParamDate = (d: string) => d.replace(/-/g, '');
+
 function RoomsContent() {
   const searchParams = useSearchParams();
-  const checkIn = searchParams.get('checkIn') || '';
-  const checkOut = searchParams.get('checkOut') || '';
-  const guests = parseInt(searchParams.get('guests') || '2');
+  const router = useRouter();
+  const initialCheckIn = searchParams.get('checkIn') || '';
+  const initialCheckOut = searchParams.get('checkOut') || '';
+  const initialGuests = searchParams.get('guests') || '2';
+
+  const [checkInInput, setCheckInInput] = useState(toInputDate(initialCheckIn));
+  const [checkOutInput, setCheckOutInput] = useState(toInputDate(initialCheckOut));
+  const [guestsInput, setGuestsInput] = useState(initialGuests);
+
+  // These are the "committed" search values (YYYYMMDD format)
+  const checkIn = initialCheckIn;
+  const checkOut = initialCheckOut;
+  const guests = parseInt(initialGuests);
   
   const [filteredProperties, setFilteredProperties] = useState(properties);
   const [loadingPrices, setLoadingPrices] = useState(false);
   const [liveRooms, setLiveRooms] = useState<any[]>([]);
   const [nights, setNights] = useState(0);
   const [expandedAmenities, setExpandedAmenities] = useState<Set<string>>(new Set());
+
+  const handleSearch = useCallback((e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!checkInInput || !checkOutInput) return;
+    const params = new URLSearchParams({
+      checkIn: toParamDate(checkInInput),
+      checkOut: toParamDate(checkOutInput),
+      guests: guestsInput,
+    });
+    router.push(`/rooms?${params.toString()}`);
+  }, [checkInInput, checkOutInput, guestsInput, router]);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split('T')[0];
   
   useEffect(() => {
     const filtered = properties.filter(p => p.guests >= guests);
@@ -129,21 +159,62 @@ function RoomsContent() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {checkIn && checkOut ? (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8">
-            <p className="text-blue-800">
-              Showing available rooms for <strong>{guests} guests</strong>
-              {' '}from <strong>{checkIn.slice(4,6)}/{checkIn.slice(6,8)}</strong> to <strong>{checkOut.slice(4,6)}/{checkOut.slice(6,8)}</strong>
-              {loadingPrices && <span className="ml-2 text-sm">(Loading live pricing...)</span>}
-            </p>
+        {/* Date & Guest Search */}
+        <form onSubmit={handleSearch} className="bg-white border border-slate-200 rounded-xl p-4 mb-8 shadow-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label htmlFor="checkIn" className="block text-xs font-medium text-slate-500 mb-1">Check In</label>
+              <input
+                id="checkIn"
+                type="date"
+                min={minDate}
+                value={checkInInput}
+                onChange={(e) => setCheckInInput(e.target.value)}
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="checkOut" className="block text-xs font-medium text-slate-500 mb-1">Check Out</label>
+              <input
+                id="checkOut"
+                type="date"
+                min={checkInInput || minDate}
+                value={checkOutInput}
+                onChange={(e) => setCheckOutInput(e.target.value)}
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="guests" className="block text-xs font-medium text-slate-500 mb-1">Guests</label>
+              <select
+                id="guests"
+                value={guestsInput}
+                onChange={(e) => setGuestsInput(e.target.value)}
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="1">1 Guest</option>
+                <option value="2">2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4 Guests</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors text-sm"
+              >
+                {loadingPrices ? 'Searching...' : 'Search'}
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
-            <p className="text-amber-800">
-              💡 <strong>Select check-in and check-out dates</strong> on the <Link href="/" className="underline font-semibold">homepage</Link> to see current availability and rates.
+          {checkIn && checkOut && !loadingPrices && (
+            <p className="text-xs text-slate-500 mt-2">
+              Showing rates for {nights} night{nights !== 1 ? 's' : ''}: {checkIn.slice(4,6)}/{checkIn.slice(6,8)} → {checkOut.slice(4,6)}/{checkOut.slice(6,8)}
             </p>
-          </div>
-        )}
+          )}
+        </form>
 
         <h1 className="text-3xl font-bold mb-2">Available Rooms</h1>
         <p className="text-slate-600 mb-1">3483 Rewak Drive, Fairbanks, AK 99709</p>
