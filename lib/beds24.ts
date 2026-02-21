@@ -163,9 +163,12 @@ export interface BookingDetails {
   lastName: string;
   email: string;
   phone: string;
-  guests: number;
-  price: number;
-  nightlyRates: { date: string; rate: number }[];
+  numAdults: number;
+  totalPrice: number;
+  nightlyRates?: { date: string; rate: number }[];
+  paymentMethod?: string;
+  paymentId?: string;
+  notes?: string;
 }
 
 export async function createBooking(details: BookingDetails): Promise<{
@@ -184,13 +187,14 @@ export async function createBooking(details: BookingDetails): Promise<{
         roomId: details.roomId,
         arrival: details.arrival,
         departure: details.departure,
-        numAdult: details.guests,
+        numAdult: details.numAdults,
         guestFirstName: details.firstName,
         guestName: guestName,
         guestEmail: details.email,
         guestPhone: details.phone,
-        price: details.price,
+        price: details.totalPrice,
         status: 1, // Confirmed
+        notes: details.notes || '',
       },
     };
 
