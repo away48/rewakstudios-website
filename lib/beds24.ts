@@ -4,10 +4,8 @@
  * 3 Room Types: Queen, 2 Doubles, 2BR Apartment
  */
 
-const BEDS24_V1_API = 'https://beds24.com/api/json';
-const BEDS24_V2_API = 'https://beds24.com/api/v2';
+const BEDS24_JSON_API = 'https://api.beds24.com/json';
 const PROP_ID = 5780;
-const MIN_NIGHTS = 2;
 
 // Room IDs for Rewak Studios
 export const ROOM_IDS: Record<string, number> = {
@@ -22,19 +20,24 @@ export const ROOM_INFO: Record<number, { name: string; slug: string; maxGuests: 
   411888: { name: '2BR Apartment', slug: 'apartment-2br', maxGuests: 4, minPrice: 165 },
 };
 
-function getV2Token(): string {
-  const token = process.env.BEDS24_V2_TOKEN;
-  if (!token) throw new Error('BEDS24_V2_TOKEN not configured');
-  return token;
-}
-
 function getV1ApiKey(): string {
   const key = process.env.BEDS24_API_KEY;
   if (!key) throw new Error('BEDS24_API_KEY not configured');
   return key;
 }
 
-// ─── V2 API: Get offers (rates + availability) ───
+// Convert YYYY-MM-DD or YYYYMMDD → YYYYMMDD
+function toYYYYMMDD(d: string): string {
+  return d.includes('-') ? d.replace(/-/g, '') : d;
+}
+
+// Convert YYYYMMDD or YYYY-MM-DD → Date
+function toDate(d: string): Date {
+  const s = d.includes('-') ? d : `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+  return new Date(s);
+}
+
+// ─── Availability API: Get offers (rates + availability) ───
 
 export interface RoomOffer {
   roomId: number;
@@ -52,19 +55,16 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
   nights: number;
   error?: string;
 }> {
-  const nights = Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
+  const nights = Math.round((toDate(checkOut).getTime() - toDate(checkIn).getTime()) / (1000 * 60 * 60 * 24));
   try {
-    const response = await fetch(`${BEDS24_V2_API}/inventory/offers`, {
+    const response = await fetch(`${BEDS24_JSON_API}/getAvailabilities`, {
       method: 'POST',
-      headers: {
-        'token': getV2Token(),
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        propId: PROP_ID,
-        checkIn,
-        checkOut,
-        numAdult: guests,
+        checkIn: toYYYYMMDD(checkIn),
+        checkOut: toYYYYMMDD(checkOut),
+        propId: String(PROP_ID),
+        numAdult: String(guests),
       }),
     });
 
@@ -73,27 +73,36 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
     }
 
     const data = await response.json();
-    
-    if (!data.success || !data.data) {
-      return { success: false, rooms: [], nights, error: data.error || 'No rooms found' };
-    }
 
-    // Map API response to our 3 room types
-    const roomIds = Object.values(ROOM_IDS);
-    const rooms: RoomOffer[] = data.data
-      .filter((offer: any) => roomIds.includes(offer.roomId))
-      .map((offer: any) => {
-        const roomInfo = ROOM_INFO[offer.roomId];
-        return {
-          roomId: offer.roomId,
-          roomName: roomInfo?.name || offer.roomName || 'Room',
-          slug: roomInfo?.slug || `room-${offer.roomId}`,
-          available: offer.available === true,
-          price: offer.price || null,
-          nightlyRates: offer.nightlyRates || [],
-          maxGuests: roomInfo?.maxGuests || 4,
-        };
-      });
+    // Map our 3 room types from the response (room IDs are keys in the response)
+    const rooms: RoomOffer[] = Object.values(ROOM_IDS).map((roomId) => {
+      const roomData = data[String(roomId)];
+      const roomInfo = ROOM_INFO[roomId];
+      const available = roomData ? Number(roomData.roomsavail) > 0 : false;
+      const totalPriceDollars = roomData?.price ? Number(roomData.price) : null;
+      const nightlyRateDollars = totalPriceDollars && nights > 0
+        ? Math.round((totalPriceDollars / nights) * 100) / 100
+        : null;
+
+      // Build nightly breakdown (even rate per night)
+      const nightlyRates = nightlyRateDollars
+        ? Array.from({ length: nights }, (_, i) => {
+            const d = toDate(checkIn);
+            d.setDate(d.getDate() + i);
+            return { date: d.toISOString().split('T')[0], rate: nightlyRateDollars };
+          })
+        : [];
+
+      return {
+        roomId,
+        roomName: roomInfo?.name || `Room ${roomId}`,
+        slug: roomInfo?.slug || `room-${roomId}`,
+        available,
+        price: totalPriceDollars ? Math.round(totalPriceDollars * 100) : null, // store as cents
+        nightlyRates,
+        maxGuests: roomInfo?.maxGuests || 4,
+      };
+    });
 
     return { success: true, rooms, nights };
   } catch (error) {
@@ -106,47 +115,31 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
 
 export async function getCalendarRates(roomId: number, checkIn: string, checkOut: string): Promise<{ date: string; rate: number }[]> {
   try {
-    const response = await fetch(`${BEDS24_V2_API}/inventory/offers`, {
+    const nights = Math.round((toDate(checkOut).getTime() - toDate(checkIn).getTime()) / (1000 * 60 * 60 * 24));
+    const response = await fetch(`${BEDS24_JSON_API}/getAvailabilities`, {
       method: 'POST',
-      headers: {
-        'token': getV2Token(),
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        propId: PROP_ID,
-        roomId,
-        checkIn,
-        checkOut,
-        numAdult: 1,
+        checkIn: toYYYYMMDD(checkIn),
+        checkOut: toYYYYMMDD(checkOut),
+        propId: String(PROP_ID),
+        numAdult: '1',
       }),
     });
 
     if (!response.ok) return [];
-
     const data = await response.json();
-    if (!data.success || !data.data) return [];
+    const roomData = data[String(roomId)];
+    if (!roomData?.price) return [];
 
-    const room = data.data.find((r: any) => r.roomId === roomId);
-    if (!room) return [];
+    const totalPrice = Number(roomData.price);
+    const nightlyRate = Math.round((totalPrice / nights) * 100) / 100;
 
-    if (room.nightlyRates && room.nightlyRates.length > 0) {
-      return room.nightlyRates;
-    }
-
-    // Fallback: distribute total price evenly across nights
-    if (room.price) {
-      const start = new Date(checkIn);
-      const end = new Date(checkOut);
-      const nights = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-      const avgRate = Math.round((room.price / nights) * 100) / 100;
-      return Array.from({ length: nights }, (_, i) => {
-        const d = new Date(start);
-        d.setDate(d.getDate() + i);
-        return { date: d.toISOString().split('T')[0], rate: avgRate };
-      });
-    }
-
-    return [];
+    return Array.from({ length: nights }, (_, i) => {
+      const d = toDate(checkIn);
+      d.setDate(d.getDate() + i);
+      return { date: d.toISOString().split('T')[0], rate: nightlyRate };
+    });
   } catch (error) {
     console.error('Beds24 calendar rates error:', error);
     return [];
@@ -198,7 +191,7 @@ export async function createBooking(details: BookingDetails): Promise<{
       },
     };
 
-    const response = await fetch(`${BEDS24_V1_API}/setBooking`, {
+    const response = await fetch(`${BEDS24_JSON_API}/setBooking`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),

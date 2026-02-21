@@ -46,7 +46,7 @@ const properties = [
     roomId: 411888,
     name: '2-Bedroom Apartment',
     type: '2 Bedroom Apartment',
-    beds: '1 Queen, 1 Double',
+    beds: '2 Queen Beds',
     guests: 4,
     bathrooms: 1,
     sqft: 750,
