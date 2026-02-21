@@ -69,6 +69,7 @@ function RoomsContent() {
   const [filteredProperties, setFilteredProperties] = useState(properties);
   const [loadingPrices, setLoadingPrices] = useState(false);
   const [liveRooms, setLiveRooms] = useState<any[]>([]);
+  const [nights, setNights] = useState(0);
   const [expandedAmenities, setExpandedAmenities] = useState<Set<string>>(new Set());
   
   useEffect(() => {
@@ -85,6 +86,7 @@ function RoomsContent() {
         .then(data => {
           if (data.success && data.rooms) {
             setLiveRooms(data.rooms);
+            if (data.nights) setNights(data.nights);
           }
         })
         .catch(err => console.error('Failed to fetch live pricing:', err))
@@ -216,9 +218,14 @@ function RoomsContent() {
                       {hasLivePrice ? (
                         <>
                           <span className="text-2xl font-bold text-slate-900">
-                            {formatPrice(currentPrice!)}
+                            {nights > 1 ? formatPrice(Math.round(currentPrice! / nights)) : formatPrice(currentPrice!)}
                           </span>
                           <span className="text-slate-500 text-sm"> / night</span>
+                          {nights > 1 && (
+                            <div className="text-xs text-slate-500 mt-0.5">
+                              {formatPrice(currentPrice!)} total · {nights} nights
+                            </div>
+                          )}
                         </>
                       ) : (
                         <span className="text-slate-600 text-sm">Select dates to see rates</span>
