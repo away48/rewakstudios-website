@@ -110,7 +110,7 @@ function StripePaymentForm({
         )}`}
       </button>
       <p className="text-xs text-slate-500 mt-2 text-center">
-        {pricing.isLongTerm ? 'Includes 3% credit card processing fee' : 'No additional fees'}
+        {pricingData.pricing.isLongTerm ? 'Includes 3% credit card processing fee' : 'No additional fees'}
       </p>
     </form>
   );
