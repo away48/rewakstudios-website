@@ -13,7 +13,8 @@ interface RoomType {
   name: string;
   maxGuests: number;
   minPrice: number;
-  roomIds: number[]; // All Beds24 room IDs for this type
+  roomIds: number[];         // Parent/aggregate IDs (used for availability count + pricing)
+  physicalRoomIds: number[]; // Individual bookable room IDs (required for setBooking)
 }
 
 export const ROOM_TYPES: RoomType[] = [
@@ -22,16 +23,18 @@ export const ROOM_TYPES: RoomType[] = [
     name: 'Queen Room',
     maxGuests: 2,
     minPrice: 97,
-    // Parent room ID — already aggregates availability across all queen units
-    roomIds: [13092],
+    roomIds: [13092], // Parent — aggregates all 9 queen units
+    // 200-floor studios (Virtual Rooms 200–208) — confirmed via getAvailabilities cross-check
+    physicalRoomIds: [57477, 61094, 61095, 61105, 61106, 61108, 61109, 61110, 61111],
   },
   {
     slug: 'two-doubles',
     name: 'Two Doubles',
     maxGuests: 4,
     minPrice: 120,
-    // Parent room ID — already aggregates availability across all double units
-    roomIds: [13091],
+    roomIds: [13091], // Parent — aggregates all 7 double units
+    // 100-floor studios (Virtual Rooms 101–107) — confirmed via getAvailabilities cross-check
+    physicalRoomIds: [61044, 61096, 61098, 61099, 61100, 61101, 61104],
   },
   {
     slug: 'apartment-2br',
@@ -39,6 +42,7 @@ export const ROOM_TYPES: RoomType[] = [
     maxGuests: 4,
     minPrice: 165,
     roomIds: [411888],
+    physicalRoomIds: [411888], // Already a single physical room
   },
 ];
 
@@ -48,7 +52,8 @@ export const ROOM_IDS: Record<string, number> = Object.fromEntries(
 );
 export const ROOM_INFO: Record<number, { name: string; slug: string; maxGuests: number; minPrice: number }> = {};
 for (const rt of ROOM_TYPES) {
-  for (const id of rt.roomIds) {
+  // Index by both parent IDs and physical room IDs so lookups work either way
+  for (const id of [...rt.roomIds, ...rt.physicalRoomIds]) {
     ROOM_INFO[id] = { name: rt.name, slug: rt.slug, maxGuests: rt.maxGuests, minPrice: rt.minPrice };
   }
 }
@@ -56,6 +61,12 @@ for (const rt of ROOM_TYPES) {
 function getV1ApiKey(): string {
   const key = process.env.BEDS24_API_KEY;
   if (!key) throw new Error('BEDS24_API_KEY not configured');
+  return key;
+}
+
+function getV1PropKey(): string {
+  const key = process.env.BEDS24_PROP_KEY;
+  if (!key) throw new Error('BEDS24_PROP_KEY not configured');
   return key;
 }
 
@@ -107,28 +118,26 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
 
     const data = await response.json();
 
-    // Aggregate availability across all physical rooms per type
+    // Build offers per room type
     const rooms: RoomOffer[] = ROOM_TYPES.map((roomType) => {
-      // Find the first available room in this type group
-      let bestRoom: { id: number; price: number } | null = null;
-      let totalAvail = 0;
+      // Step 1: Get price + aggregate availability from parent ID
+      const parentData = data[String(roomType.roomIds[0])];
+      const totalAvail = Number(parentData?.roomsavail) || 0;
+      const totalPriceDollars = parentData?.price != null ? Number(parentData.price) : null;
 
-      for (const rid of roomType.roomIds) {
+      // Step 2: Find a specific available physical room ID for setBooking
+      // (parent IDs cannot be used directly with setBooking)
+      let availablePhysicalRoomId: number | null = null;
+      for (const rid of roomType.physicalRoomIds) {
         const roomData = data[String(rid)];
-        if (!roomData) continue;
-        const avail = Number(roomData.roomsavail) || 0;
-        totalAvail += avail;
-        if (avail > 0 && roomData.price != null) {
-          const price = Number(roomData.price);
-          // Pick the cheapest available room
-          if (!bestRoom || price < bestRoom.price) {
-            bestRoom = { id: rid, price };
-          }
+        if (roomData && Number(roomData.roomsavail) > 0) {
+          availablePhysicalRoomId = rid;
+          break;
         }
       }
 
-      const available = totalAvail > 0;
-      const totalPriceDollars = bestRoom?.price ?? null;
+      const available = totalAvail > 0 && availablePhysicalRoomId !== null;
+
       const nightlyRateDollars = totalPriceDollars && nights > 0
         ? Math.round((totalPriceDollars / nights) * 100) / 100
         : null;
@@ -142,7 +151,8 @@ export async function getOffers(checkIn: string, checkOut: string, guests: numbe
         : [];
 
       return {
-        roomId: bestRoom?.id ?? roomType.roomIds[0],
+        // Return physical room ID — this is what gets stored in Stripe metadata and passed to setBooking
+        roomId: availablePhysicalRoomId ?? roomType.physicalRoomIds[0],
         roomName: roomType.name,
         slug: roomType.slug,
         available,
@@ -223,6 +233,7 @@ export async function createBooking(details: BookingDetails): Promise<{
     const requestBody = {
       authentication: {
         apiKey: getV1ApiKey(),
+        propKey: getV1PropKey(),
       },
       booking: {
         roomId: details.roomId,
