@@ -21,7 +21,7 @@ const properties = [
     amenities: ['Shared Kitchenette', 'WiFi', 'Free Parking', 'Smart TV'],
     images: [
       'https://media.xmlcal.com/pic/p0000/5780/17.png',
-      'https://media.xmlcal.com/pic/p0000/5780/01.png',
+      'https://media.xmlcal.com/pic/p0000/5780/19.png',
     ],
   },
   {
@@ -38,7 +38,7 @@ const properties = [
     amenities: ['Shared Kitchenette', 'WiFi', 'Free Parking', 'Smart TV'],
     images: [
       'https://media.xmlcal.com/pic/p0000/5780/06.png',
-      'https://media.xmlcal.com/pic/p0000/5780/01.png',
+      'https://media.xmlcal.com/pic/p0000/5780/19.png',
     ],
   },
   {
