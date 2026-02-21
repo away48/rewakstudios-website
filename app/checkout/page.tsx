@@ -128,6 +128,7 @@ function ACHPaymentForm({
   onSuccess: (result: any) => void;
   onError: (error: string) => void;
 }) {
+  const pricing = pricingData.pricing;
   const [routingNumber, setRoutingNumber] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [confirmAccountNumber, setConfirmAccountNumber] = useState('');
