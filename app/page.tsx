@@ -82,8 +82,6 @@ export default function Home() {
                   <option value="2">2 Guests</option>
                   <option value="3">3 Guests</option>
                   <option value="4">4 Guests</option>
-                  <option value="5">5 Guests</option>
-                  <option value="6">6 Guests</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -114,7 +112,7 @@ export default function Home() {
             {[
               { name: 'Queen Room', type: 'Studio', guests: '2 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/17.png' },
               { name: 'Two Doubles', type: 'Studio', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/06.png' },
-              { name: '2BR Apartment', type: '2 Bedroom', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/02.png' },
+              { name: '2BR Apartment', type: '2 Bedroom', guests: '4 guests', image: 'https://media.xmlcal.com/pic/p0000/5780/34.png' },
             ].map((unit) => (
               <div key={unit.name} className="group cursor-pointer">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 mb-4 relative">

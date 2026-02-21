@@ -270,7 +270,7 @@ function CheckoutContent() {
     phone: '',
   });
 
-  const property = searchParams.get('property') || '';
+  const property = searchParams.get('room') || '';
   const checkIn = searchParams.get('checkIn') || '';
   const checkOut = searchParams.get('checkOut') || '';
   const guests = searchParams.get('guests') || '2';
